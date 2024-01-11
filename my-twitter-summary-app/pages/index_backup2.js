@@ -43,7 +43,7 @@ export default function Home() {
           >
             <option value="Web3">Web3</option>
             <option value="AI">AI</option>
-            // 更多选项...
+            {/* 更多选项... */}
           </select>
 
           <button 
