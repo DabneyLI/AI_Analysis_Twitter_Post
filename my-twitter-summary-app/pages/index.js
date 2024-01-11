@@ -4,16 +4,18 @@ import { useState } from 'react'
 export default function Home() {
   const [tweets, setTweets] = useState([]);
   const [summary, setSummary] = useState('');
+  const [selectedTopic, setSelectedTopic] = useState('Web3'); // 默认选择Web3
 
   // 模拟获取数据的函数
   const fetchData = async () => {
-    // 这里是模拟的数据，你需要替换成实际从你的API获取的数据
+    // 根据selectedTopic调整获取的数据
+    // 这里是模拟数据，你需要根据实际情况调整
     const mockTweets = [
-      { id: 1, content: '推文内容示例 1' },
-      { id: 2, content: '推文内容示例 2' },
+      { id: 1, content: `推文内容示例 1 (${selectedTopic})` },
+      { id: 2, content: `推文内容示例 2 (${selectedTopic})` },
       // 更多推文...
     ];
-    const mockSummary = '这是GPT对推文的汇总分析。';
+    const mockSummary = `这是GPT对${selectedTopic}推文的汇总分析。`;
 
     setTweets(mockTweets);
     setSummary(mockSummary);
@@ -33,12 +35,24 @@ export default function Home() {
       </nav>
 
       <main className="container mx-auto my-8">
-        <button 
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-          onClick={fetchData}
-        >
-          获取推文数据
-        </button>
+        <div className="flex flex-col sm:flex-row justify-between mb-4">
+          <select 
+            className="mb-4 sm:mb-0 bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            value={selectedTopic}
+            onChange={e => setSelectedTopic(e.target.value)}
+          >
+            <option value="Web3">Web3</option>
+            <option value="AI">AI</option>
+            // 更多选项...
+          </select>
+
+          <button 
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            onClick={fetchData}
+          >
+            获取推文数据
+          </button>
+        </div>
 
         <div className="mb-8">
           <h2 className="text-2xl font-semibold mb-3">GPT汇总分析</h2>
