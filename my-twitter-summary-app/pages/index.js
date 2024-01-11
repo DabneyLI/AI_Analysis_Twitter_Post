@@ -1,19 +1,23 @@
 import Head from 'next/head'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 export default function Home() {
-  const [tweets, setTweets] = useState([]); // 存储推文数据
-  const [summary, setSummary] = useState(''); // 存储GPT的汇总分析
+  const [tweets, setTweets] = useState([]);
+  const [summary, setSummary] = useState('');
 
-  // 模拟获取数据，这部分应替换为真实的API调用
-  useEffect(() => {
-    setTweets([
+  // 模拟获取数据的函数
+  const fetchData = async () => {
+    // 这里是模拟的数据，你需要替换成实际从你的API获取的数据
+    const mockTweets = [
       { id: 1, content: '推文内容示例 1' },
       { id: 2, content: '推文内容示例 2' },
       // 更多推文...
-    ]);
-    setSummary('这是GPT对推文的汇总分析。');
-  }, []);
+    ];
+    const mockSummary = '这是GPT对推文的汇总分析。';
+
+    setTweets(mockTweets);
+    setSummary(mockSummary);
+  };
 
   return (
     <div>
@@ -29,6 +33,13 @@ export default function Home() {
       </nav>
 
       <main className="container mx-auto my-8">
+        <button 
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+          onClick={fetchData}
+        >
+          获取推文数据
+        </button>
+
         <div className="mb-8">
           <h2 className="text-2xl font-semibold mb-3">GPT汇总分析</h2>
           <div className="bg-white shadow-lg rounded-lg p-6">
