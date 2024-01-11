@@ -1,8 +1,6 @@
 import Head from 'next/head'
 import { useState } from 'react'
-// 请确保这里的路径与你的项目结构相匹配
-// 如果 fetchTweets.js 不在 lib 文件夹内，请更新此路径
-import fetchTweets from '../lib/fetchTweets'
+import fetchTweets from '../lib/fetchTweets' // 确保路径与你的项目结构匹配
 
 export default function Home() {
   const [tweets, setTweets] = useState([]);
@@ -11,13 +9,10 @@ export default function Home() {
 
   // 获取数据的函数
   const fetchData = async () => {
-    try {
-      const response = await fetch(`/api/tweets?topic=${selectedTopic}`);
-      const data = await response.json();
-      setTweets(data);
-    } catch (error) {
-      console.error('Error fetching tweets:', error);
-    }
+    const fetchedTweets = await fetchTweets(selectedTopic);
+    setTweets(fetchedTweets);
+    // 假设你还需要设置summary，这里你可以添加这部分的逻辑
+    // setSummary('...从fetchedTweets中提取的汇总...');
   };
 
   return (
@@ -66,8 +61,10 @@ export default function Home() {
             {tweets.map((tweet, index) => (
               <div key={index} className="bg-white shadow-lg rounded-lg p-4">
                 <p className="text-gray-700">{tweet.content}</p>
+                {/* 添加其他推文信息如用户名和日期 */}
                 <p className="text-gray-500 text-sm">{tweet.username}</p>
                 <p className="text-gray-500 text-sm">{tweet.tweetDate}</p>
+                {/* 添加查看原推文的链接 */}
                 <a href={`https://nitter.net${tweet.link}`} target="_blank" rel="noopener noreferrer">查看原推文</a>
               </div>
             ))}

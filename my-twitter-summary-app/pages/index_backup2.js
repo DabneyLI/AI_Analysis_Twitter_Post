@@ -1,23 +1,24 @@
 import Head from 'next/head'
 import { useState } from 'react'
-// 请确保这里的路径与你的项目结构相匹配
-// 如果 fetchTweets.js 不在 lib 文件夹内，请更新此路径
-import fetchTweets from '../lib/fetchTweets'
 
 export default function Home() {
   const [tweets, setTweets] = useState([]);
   const [summary, setSummary] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('Web3'); // 默认选择Web3
 
-  // 获取数据的函数
+  // 模拟获取数据的函数
   const fetchData = async () => {
-    try {
-      const response = await fetch(`/api/tweets?topic=${selectedTopic}`);
-      const data = await response.json();
-      setTweets(data);
-    } catch (error) {
-      console.error('Error fetching tweets:', error);
-    }
+    // 根据selectedTopic调整获取的数据
+    // 这里是模拟数据，你需要根据实际情况调整
+    const mockTweets = [
+      { id: 1, content: `推文内容示例 1 (${selectedTopic})` },
+      { id: 2, content: `推文内容示例 2 (${selectedTopic})` },
+      // 更多推文...
+    ];
+    const mockSummary = `这是GPT对${selectedTopic}推文的汇总分析。`;
+
+    setTweets(mockTweets);
+    setSummary(mockSummary);
   };
 
   return (
@@ -42,7 +43,7 @@ export default function Home() {
           >
             <option value="Web3">Web3</option>
             <option value="AI">AI</option>
-            {/* 更多选项... */}
+            // 更多选项...
           </select>
 
           <button 
@@ -63,12 +64,9 @@ export default function Home() {
         <div>
           <h2 className="text-2xl font-semibold mb-3">推文素材</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tweets.map((tweet, index) => (
-              <div key={index} className="bg-white shadow-lg rounded-lg p-4">
+            {tweets.map(tweet => (
+              <div key={tweet.id} className="bg-white shadow-lg rounded-lg p-4">
                 <p className="text-gray-700">{tweet.content}</p>
-                <p className="text-gray-500 text-sm">{tweet.username}</p>
-                <p className="text-gray-500 text-sm">{tweet.tweetDate}</p>
-                <a href={`https://nitter.net${tweet.link}`} target="_blank" rel="noopener noreferrer">查看原推文</a>
               </div>
             ))}
           </div>

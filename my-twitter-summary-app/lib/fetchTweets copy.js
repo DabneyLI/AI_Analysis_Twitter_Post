@@ -4,11 +4,11 @@ const cheerio = require('cheerio');
 const fetchTweets = async (searchQuery) => {
   const url = `https://nitter.net/search?f=tweets&q=${encodeURIComponent(searchQuery)}`;
   try {
-    console.log(`Fetching tweets for topic: ${searchQuery}`); // 测试代码
+    console.log(`Fetching tweets for topic: ${selectedTopic}`); //测试代码
     const response = await axios.get(url);
     if (response.status === 200) {
       const tweets = parseTweets(response.data);
-      console.log('Tweets fetched:', tweets); // 测试代码
+      console.log('Tweets fetched:', fetchedTweets); //测试代码
       return tweets;
     } else {
       throw new Error(`Error fetching tweets: ${response.status}`);
