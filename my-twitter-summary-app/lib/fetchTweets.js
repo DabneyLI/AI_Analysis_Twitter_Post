@@ -2,7 +2,22 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 const fetchTweets = async (searchQuery) => {
-  const url = `https://nitter.net/search?f=tweets&q=${encodeURIComponent(searchQuery)}`;
+  // 获取今天的日期和七天前的日期
+  const today = new Date();
+  const lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+
+  // 转换日期为 YYYY-MM-DD 格式
+  const formatDate = (date) => {
+    return date.toISOString().split('T')[0];
+  };
+
+  const sinceDate = formatDate(lastWeek);
+  const untilDate = formatDate(today);
+
+  // 构建查询字符串，屏蔽视频内容并设定时间范围
+  const queryParams = `f=tweets&q=${encodeURIComponent(searchQuery)}&e-videos=on&e-native_video=on&e-pro_video=on&since=${sinceDate}&until=${untilDate}`;
+  const url = `https://nitter.net/search?${queryParams}`;
+  //const url = `https://nitter.net/search?f=tweets&q=${encodeURIComponent(searchQuery)}`;
   try {
     const response = await axios.get(url, {
       headers: {
