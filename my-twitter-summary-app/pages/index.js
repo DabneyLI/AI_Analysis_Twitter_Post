@@ -8,15 +8,19 @@ export default function Home() {
   const [tweets, setTweets] = useState([]);
   const [summary, setSummary] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('Web3'); // 默认选择Web3
+  const [isLoading, setIsLoading] = useState(false); // 添加一个加载状态
 
   // 获取数据的函数
   const fetchData = async () => {
+    setIsLoading(true); // 开始加载数据时设置为true
     try {
       const response = await fetch(`/api/tweets?topic=${selectedTopic}`);
       const data = await response.json();
       setTweets(data);
     } catch (error) {
       console.error('Error fetching tweets:', error);
+    } finally {
+      setIsLoading(false); // 加载完成后设置为false
     }
   };
 
@@ -59,7 +63,13 @@ export default function Home() {
             <p className="text-gray-700">{summary}</p>
           </div>
         </div>
-
+        <div>
+          {isLoading ? <p>Loading...</p> : (
+            <div>
+              {/* 显示推文 */}
+            </div>
+          )}
+        </div>
         <div>
           <h2 className="text-2xl font-semibold mb-3">推文素材</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -4,7 +4,6 @@ const cheerio = require('cheerio');
 const fetchTweets = async (searchQuery) => {
   const url = `https://nitter.net/search?f=tweets&q=${encodeURIComponent(searchQuery)}`;
   try {
-    console.log('Attempting to fetch data...'); // 确认函数被调用
     const response = await axios.get(url, {
       headers: {
         'accept-language': 'zh-CN,zh-TW;q=0.9,zh;q=0.8,en-US;q=0.7,en;q=0.6,ja;q=0.5',
@@ -12,7 +11,6 @@ const fetchTweets = async (searchQuery) => {
     });
     if (response.status === 200) {
       const tweets = parseTweets(response.data);
-      console.log('Data received:', tweets); // 确认数据被接收
       return tweets;
     } else {
       throw new Error(`Error fetching tweets: ${response.status}`);
