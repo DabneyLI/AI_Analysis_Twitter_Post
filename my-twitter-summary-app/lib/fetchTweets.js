@@ -49,7 +49,7 @@ const parseTweets = (htmlContent) => {
       content,
       username,
       tweetDate,
-      link: `https://nitter.net${tweetLink}`
+      link: `${tweetLink}`
     });
   });
 
