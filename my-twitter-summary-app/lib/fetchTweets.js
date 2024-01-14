@@ -30,41 +30,46 @@ const fetchTweets = async (searchQuery) => {
 
       await new Promise(resolve => setTimeout(resolve, 2000)); // 2 seconds delay
     } catch (error) {
-      console.error(`Error fetching tweets: ${error.message}`);
-      hasNextPage = false;
+    console.error(`Error fetching tweets: ${error.message}`);
+    hasNextPage = false;
     }
-  }
-
-  return allTweets;
-};
-
-const parseTweetsAndCursor = (htmlContent) => {
-  const $ = cheerio.load(htmlContent);
-  const tweetsData = [];
-  const loadMoreLink = $('.show-more a').attr('href');
-  const cursor = new URLSearchParams(loadMoreLink).get('cursor');
-  let lastTweetDate = '';
-
-  $('.timeline-item').each((index, element) => {
+    }
+    
+    return allTweets;
+    };
+    
+    const parseTweetsAndCursor = (htmlContent) => {
+    const $ = cheerio.load(htmlContent);
+    const tweetsData = [];
+    let lastTweetDate = '';
+    let nextCursor = '';
+    
+    $('.timeline-item').each((index, element) => {
     const tweetLink = $(element).find('.tweet-link').attr('href');
     const content = $(element).find('.tweet-content').text().trim();
     const username = $(element).find('.username').text().trim();
-    const tweetDate = $(element).find('.tweet-date a').attr('title');
-
-    // 更新最后一条推文的日期
+    const tweetDate = $(element).find('.tweet-date a').attr('title');// Update lastTweetDate based on the date of the last tweet
     if (index === 0) {
       lastTweetDate = tweetDate;
     }
-
+    
     tweetsData.push({
       content,
       username,
       tweetDate,
-      link: `${tweetLink}`
-    });
-  });
+      link: `https://nitter.net${tweetLink}`
+    });});
 
-  return { tweets: tweetsData, nextCursor: cursor, lastTweetDate };
-};
-
-module.exports = fetchTweets;
+    // Logic to find and parse the cursor for the next page
+    const loadMoreLink = $('.show-more a').attr('href');
+    if (loadMoreLink) {
+    const cursorMatch = loadMoreLink.match(/cursor=([^&]+)/);
+    if (cursorMatch && cursorMatch[1]) {
+    nextCursor = cursorMatch[1];
+    }
+    }
+    
+    return { tweets: tweetsData, nextCursor, lastTweetDate };
+    };
+    
+    module.exports = fetchTweets;
