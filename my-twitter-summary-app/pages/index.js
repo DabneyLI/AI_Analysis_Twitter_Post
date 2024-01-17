@@ -3,6 +3,7 @@ import { useState } from 'react'
 // 请确保这里的路径与你的项目结构相匹配
 // 如果 fetchTweets.js 不在 lib 文件夹内，请更新此路径
 import fetchTweets from '../lib/fetchTweets'
+import DOMPurify from 'dompurify'
 
 export default function Home() {
   const [tweets, setTweets] = useState([]);
@@ -23,6 +24,12 @@ export default function Home() {
       setIsLoading(false); // 加载完成后设置为false
     }
   };
+
+  // 安全地创建HTML内容
+  const createMarkup = (htmlContent) => {
+    // 使用DOMPurify来清理和过滤内容
+    return { __html: DOMPurify.sanitize(htmlContent) };
+  }
 
   return (
     <div>
@@ -66,22 +73,24 @@ export default function Home() {
         <div>
           {isLoading ? <p>Loading...</p> : (
             <div>
-              {/* 显示推文 */}
+            {/* 显示推文 */}
             </div>
           )}
         </div>
+
         <div>
           <h2 className="text-2xl font-semibold mb-3">推文素材</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tweets.map((tweet, index) => (
-              <div key={index} className="bg-white shadow-lg rounded-lg p-4">
-                <p className="text-gray-700">{tweet.content}</p>
-                <p className="text-gray-500 text-sm">{tweet.username}</p>
-                <p className="text-gray-500 text-sm">{tweet.tweetDate}</p>
-                <a href={`https://nitter.net${tweet.link}`} target="_blank" rel="noopener noreferrer">查看原推文</a>
+            <div className="mb-6 grid grid-cols-1 justify-items-center gap-8 sm:justify-items-stretch md:grid-cols-3 md:gap-4 lg:mb-12">
+                {tweets.map((tweet, index) => (
+                  <div key={index} className="flex flex-col gap-4 rounded-2xl border border-gray-300 bg-white p-6 shadow-md hover:shadow-lg transition-shadow duration-300">
+                    {/* 这里使用 createMarkup 函数来设置清理过的HTML内容 */}
+                    <div dangerouslySetInnerHTML={createMarkup(tweet.content)} />
+                    <p className="text-gray-500 text-sm">{tweet.username}</p>
+                    <p className="text-gray-500 text-sm">{tweet.tweetDate}</p>
+                    <a href={`${tweet.link}`} target="_blank" rel="noopener noreferrer" className="mt-auto text-blue-500 hover:text-blue-600 transition-colors duration-300">查看原推文 &rarr;</a>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
         </div>
       </main>
 
