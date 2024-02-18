@@ -1,35 +1,31 @@
-import Head from 'next/head'
-import { useState } from 'react'
-// 请确保这里的路径与你的项目结构相匹配
-// 如果 fetchTweets.js 不在 lib 文件夹内，请更新此路径
-import fetchTweets from '../lib/fetchTweets'
-import DOMPurify from 'dompurify'
+import Head from 'next/head';
+import { useState } from 'react';
+import fetchTweets from '../lib/fetchTweets'; // 确保路径正确
+import DOMPurify from 'dompurify';
 
 export default function Home() {
-  const [tweets, setTweets] = useState([]);
+  // 添加summary状态
   const [summary, setSummary] = useState('');
-  const [selectedTopic, setSelectedTopic] = useState('Web3'); // 默认选择Web3
-  const [isLoading, setIsLoading] = useState(false); // 添加一个加载状态
+  const [selectedTopic, setSelectedTopic] = useState('Web3'); // 确保此状态已正确声明
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [tweets, setTweets] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // 获取数据的函数
   const fetchData = async () => {
-    setIsLoading(true); // 开始加载数据时设置为true
+    setIsLoading(true);
     try {
-      const response = await fetch(`/api/tweets?topic=${selectedTopic}`);
-      const data = await response.json();
+      const data = await fetchTweets(startDate, endDate); // 修改此处，传递开始日期和结束日期
       setTweets(data);
     } catch (error) {
       console.error('Error fetching tweets:', error);
     } finally {
-      setIsLoading(false); // 加载完成后设置为false
+      setIsLoading(false);
     }
   };
 
   // 安全地创建HTML内容
   const createMarkup = (htmlContent) => {
-    // 使用DOMPurify来清理和过滤内容
     return { __html: DOMPurify.sanitize(htmlContent) };
   }
 
@@ -39,6 +35,13 @@ export default function Home() {
         <title>Twitter Summary</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
+      {/* 添加日期选择器 */}
+      <div>
+        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+        <button onClick={fetchData}>获取推文数据</button>
+      </div>
 
       <nav className="bg-gray-800 p-4 text-white">
         <div className="container mx-auto">
@@ -57,10 +60,7 @@ export default function Home() {
             <option value="AI">AI</option>
             {/* 更多选项... */}
           </select>
-          <div>
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-          </div>
+
           <button 
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             onClick={fetchData}
