@@ -4,6 +4,7 @@ import { useState } from 'react'
 // 如果 fetchTweets.js 不在 lib 文件夹内，请更新此路径
 import fetchTweets from '../lib/fetchTweets'
 import DOMPurify from 'dompurify'
+import axios from 'axios'; // 确保已经安装 axios
 
 export default function Home() {
   const [tweets, setTweets] = useState([]);
@@ -12,14 +13,57 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false); // 添加一个加载状态
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [serverStatus, setServerStatus] = useState({});
+  const [serverList, setServerList] = useState([
+    { name: 'Server A', url: 'https://nitter.servera.com', status: 'unknown' },
+    { name: 'Server B', url: 'https://nitter.serverb.com', status: 'unknown' },
+    // ... 其他服务器
+  ]);
 
-  // 获取数据的函数
+  /*useEffect(() => {
+    // 当组件加载后，获取服务器状态
+    fetchServerStatus();
+        // 假设您将有一个 API 端点来检查服务器状态
+    serverList.forEach(server => {
+      fetch(`/api/server-status?url=${server.url}`)
+        .then(response => response.json())
+        .then(data => {
+          setServerList(prevList =>
+            prevList.map(item =>
+              item.url === server.url ? { ...item, status: data.status } : item
+            )
+          );
+        })
+        .catch(() => {
+          setServerList(prevList =>
+            prevList.map(item =>
+              item.url === server.url ? { ...item, status: 'down' } : item
+            )
+          );
+        });
+    });
+  }, []);*/
+
+  // 获取服务器状态的函数
+  const fetchServerStatus = async () => {
+    try {
+      // 替换为您的 API 路径
+      const response = await axios.get('/api/server-status');
+      setServerStatus(response.data);
+    } catch (error) {
+      console.error('Error fetching server status:', error);
+    }
+  };
+
+
+  // 获取推文数据的函数，现在包含开始日期和结束日期参数
   const fetchData = async () => {
     setIsLoading(true); // 开始加载数据时设置为true
     try {
-      const response = await fetch(`/api/tweets?topic=${selectedTopic}`);
+      // 将日期参数添加到 API 请求中
+      const response = await axios.get(`/api/tweets?topic=${selectedTopic}&startDate=${startDate}&endDate=${endDate}`);
       const data = await response.json();
-      setTweets(data);
+      setTweets(response.data);
     } catch (error) {
       console.error('Error fetching tweets:', error);
     } finally {
@@ -47,9 +91,10 @@ export default function Home() {
       </nav>
 
       <main className="container mx-auto my-8">
-        <div className="flex flex-col sm:flex-row justify-between mb-4">
+        <div className="flex flex-wrap items-center justify-between mb-4 gap-4">
+          {/* 话题选择 */}
           <select 
-            className="mb-4 sm:mb-0 bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            className="bg-white border border-gray-300 text-gray-700 text-xs py-2 px-4 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
             value={selectedTopic}
             onChange={e => setSelectedTopic(e.target.value)}
           >
@@ -57,17 +102,53 @@ export default function Home() {
             <option value="AI">AI</option>
             {/* 更多选项... */}
           </select>
-          <div>
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+
+          {/* 日期选择 */}
+          <div className="flex items-center gap-2">
+            <label htmlFor="startDate" className="text-xs font-bold text-gray-700">开始日期:</label>
+            <input
+              type="date"
+              id="startDate"
+              className="bg-white border border-gray-300 text-gray-700 text-xs py-1 px-2 rounded leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+              value={startDate}
+              onChange={e => setStartDate(e.target.value)}
+            />
+            <label htmlFor="endDate" className="text-xs font-bold text-gray-700">结束日期:</label>
+            <input
+              type="date"
+              id="endDate"
+              className="bg-white border border-gray-300 text-gray-700 text-xs py-1 px-2 rounded leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+              value={endDate}
+              onChange={e => setEndDate(e.target.value)}
+            />
           </div>
+
+          {/* 服务器选择 */}
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-bold text-gray-700">选择服务器:</label>
+            <select
+              className="bg-white border border-gray-300 text-gray-700 text-xs py-2 px-4 rounded leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+              onChange={e => {
+                // ... 选择服务器的处理逻辑
+              }}
+            >
+                {serverList.map(server => (
+                  <option key={server.url} value={server.url}>
+                    {server.name} {server.status === 'up' ? '🟢' : '🔴'}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          {/* 获取推文数据按钮 */}
           <button 
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded"
             onClick={fetchData}
           >
             获取推文数据
           </button>
         </div>
+
 
         <div className="mb-8">
           <h2 className="text-2xl font-semibold mb-3">GPT汇总分析</h2>
