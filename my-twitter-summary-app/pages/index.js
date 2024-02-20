@@ -60,10 +60,10 @@ export default function Home() {
   const fetchData = async () => {
     setIsLoading(true); // 开始加载数据时设置为true
     try {
-      // 将日期参数添加到 API 请求中
+      // 将话题与日期参数添加到 API 请求中
       const response = await axios.get(`/api/tweets?topic=${selectedTopic}&startDate=${startDate}&endDate=${endDate}`);
-      const data = await response.json();
-      setTweets(response.data);
+      const data = await response.data;
+      setTweets(data);
     } catch (error) {
       console.error('Error fetching tweets:', error);
     } finally {
