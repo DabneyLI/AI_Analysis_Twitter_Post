@@ -32,7 +32,7 @@ const fetchTweets = async (topic, startDate, endDate) => {
       });
 
       if (!cursor) break; // 没有更多数据
-      await delay(10); // 避免过快请求
+      await delay(3); // 避免过快请求
     }
   } catch (error) {
     console.error(`Error fetching tweets: ${error}`);
